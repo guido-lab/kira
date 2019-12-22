@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Avro & Query Generator</h2>
+  <!-- {% if avro_str %} -->
+  <!-- <p>AVRO Schemma: <h3>{{ avro_str }}</h3></p> -->
+  <div class="row">
+    <div class="col-md-6" style="background-color:yellow;">
+        <pre><span>{{ avro_str }}</span></pre>
+    </div>
+    <div class="col-md-6" style="background-color:pink;">
+        <pre><span>{{ query_str }}</span></pre>
+    </div>
+  </div>
+  <!-- {% endif %} -->
+{% endblock %}

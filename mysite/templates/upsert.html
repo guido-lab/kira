@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Upsert Query Generator</h2>
+  <div class="row">
+    <div class="col-md-6" style="background-color:rgb(240, 121, 121);">
+        <pre><span>{{ query_str }}</span></pre>
+    </div>
+    <div class="col-md-6" style="background-color:rgb(0, 255, 106);">
+        <pre><span>
+    CREATE UNIQUE INDEX index_name 
+    ON table_name(unix_column_name);
+
+    ALTER TABLE data_tabe 
+    ADD CONSTRAINT constraint_id 
+    UNIQUE USING INDEX index_name;
+        </span></pre>
+    </div>
+
+  </div>
+{% endblock %}
