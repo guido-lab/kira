@@ -3,41 +3,39 @@
 {% block content %}
 
   {% block content_header %}
-    <h2>Books</h2>
+    <h2>Files</h2>
     <p>
-      <a href="{% url 'upload_book' %}" class="btn btn-primary">Upload book</a>
+      <a href="{% url 'upload' %}" class="btn btn-primary">Upload File</a>
     </p>
   {% endblock %}
 
   <table class="table mb-0">
     <thead>
       <tr>
-        <th>Cover</th>
-        <th>Title</th>
+        <th>Type</th>
+        <th>Name</th>
         <th>Author</th>
         <th>Download</th>
         <th>Delete</th>
       </tr>
     </thead>
     <tbody>
-      {% for book in books %}
+      {% for file in files %}
         <tr>
           <td>
-            {% if book.cover %}
-              <img src="{{ book.cover.url }}" alt="{{ book.title }}" style="width:100px;">
-            {% else %}
-              <span class="text-muted">No cover</span>
-            {% endif %}
+              <img src="data:image/jpeg;base64,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"  style="width:40px;">
+              <span class="text-muted"></span>
           </td>
-          <td>{{ book.title }}</td>
-          <td>{{ book.author }}</td>
+          <td>{{ file }}</td>
+          <td>NiFi</td>
           <td>
-            <a href="{{ book.pdf.url }}" class="btn btn-primary btn-sm" target="_blank">
-              Download PDF
-            </a>
+            <form method="post" action="{% url 'download_file' file %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-success btn-sm">Download</button>
+            </form>
           </td>
           <td>
-            <form method="post" action="{% url 'delete_book' book.pk %}">
+            <form method="post" action="{% url 'delete_file' file %}">
               {% csrf_token %}
               <button type="submit" class="btn btn-danger btn-sm">Delete</button>
             </form>

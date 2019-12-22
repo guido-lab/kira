@@ -4,6 +4,7 @@ from django.core.files.storage import FileSystemStorage
 from django.urls import reverse_lazy
 import os
 import pandas as pd
+from django.http import HttpResponse
 
 from .forms import BookForm
 from .models import Book
@@ -23,10 +24,13 @@ def upload(request):
     return render(request, 'upload.html', context)
 
 
-def book_list(request):
-    books = Book.objects.all()
+def file_list(request):
+    files = []
+    for file in os.listdir('media/'):
+        if file.endswith(".xlsx"):
+            files.append(file)
     return render(request, 'book_list.html', {
-        'books': books
+        'files': files
     })
 
 
@@ -84,6 +88,7 @@ CREATE TABLE db.schemma_name.data_temp(
 def upsert(request):
     query_str1 = ''
     query_str2 = ''
+    query_str = ''
     for file in os.listdir('media/'):
         if file.endswith(".xlsx"):
             cols = pd.read_excel('media/'+file).columns
@@ -115,12 +120,19 @@ DO''' + '\n'
     'query_str': query_str
     })
 
-def delete_book(request, pk):
+def delete_file(request, file):
     if request.method == 'POST':
-        book = Book.objects.get(pk=pk)
-        book.delete()
-    return redirect('book_list')
+        os.remove('media/' + file)
+    return redirect('file_list')
 
+def download_file(request, file):
+    if request.method == 'POST':
+        with open('media/' + file, 'rb') as fh:
+            
+            response = HttpResponse(fh.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            response['Content-Disposition'] = 'attachment; filename=' + file
+            return response
+    # return redirect('file_list')
 
 class BookListView(ListView):
     model = Book
