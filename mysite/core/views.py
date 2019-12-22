@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 import os
 import pandas as pd
 from django.http import HttpResponse
+import glob
 
 from .forms import BookForm
 from .models import Book
@@ -50,35 +51,37 @@ def avro_schema(request):
     # if request.method == 'POST':
     avro_str = None
     query_str = None
-    for file in os.listdir('media/'):
-        if file.endswith(".xlsx"):
-            cols = pd.read_excel('media/'+file).columns
-            avro_str = '''
+    list_of_files = glob.glob('media/*')
+    file = max(list_of_files, key=os.path.getctime)
+    if file.endswith(".xlsx"):
+        cols = pd.read_excel(file).columns
+        avro_str = '''
 {
 "type": "record",
 "name": "avro_schemma",
 "fields":
 [ 
 '''
-            query_str = '''
+        query_str = '''
 CREATE TABLE db.schemma_name.data_temp(
 '''
-            i = 0
-            length = len(cols)
-            for s in cols:
-                for ch in ['\\','/','*','-','.',',','(',')']:
-                    s = s.replace(ch,'')
-                s = s.replace(r' ','_')
-                i+=1
-                if i < length:
-                    avro_str = avro_str + '    { "name": "' + s + '", "type": ["null","string"]},' + '\n'
-                    query_str = query_str + '    ' + s + '  VARCHAR(200),' + '\n'
-                else:
-                    avro_str = avro_str + '    { "name": "' + s + '", "type": ["null","string"]}' + '\n'
-                    query_str = query_str + '    ' + s + '  VARCHAR(200)' + '\n'
-            avro_str = avro_str + ''' ]
+        i = 0
+        length = len(cols)
+        for s in cols:
+            for ch in ['\\','/','*','-','.',',','(',')','"',"'"]:
+                s = s.replace(ch,'')
+            s = s.replace(r'à','a')
+            s = s.replace(r' ','_').lower()
+            i+=1
+            if i < length:
+                avro_str = avro_str + '    { "name": "' + s + '", "type": ["null","string"]},' + '\n'
+                query_str = query_str + '    ' + s + '  VARCHAR(200),' + '\n'
+            else:
+                avro_str = avro_str + '    { "name": "' + s + '", "type": ["null","string"]}' + '\n'
+                query_str = query_str + '    ' + s + '  VARCHAR(200)' + '\n'
+        avro_str = avro_str + ''' ]
 }'''
-            query_str = query_str + ''')'''
+        query_str = query_str + ''')'''
 
     return render(request, 'avro_schema.html', {
     'avro_str': avro_str,
@@ -89,32 +92,36 @@ def upsert(request):
     query_str1 = ''
     query_str2 = ''
     query_str = ''
-    for file in os.listdir('media/'):
-        if file.endswith(".xlsx"):
-            cols = pd.read_excel('media/'+file).columns
-            query_str = '''
+    list_of_files = glob.glob('media/*')
+    file = max(list_of_files, key=os.path.getctime)
+    if file.endswith(".xlsx"):
+        cols = pd.read_excel(file).columns
+        query_str1 = ''
+        query_str2 = ''
+        query_str = '''
 INSERT INTO db.schemma_name.data_temp(
     SELECT
 '''         
-            on_consatrint = '''ON CONFLICT ON CONSTRAINT consatrint_name_key 
+        on_consatrint = '''ON CONFLICT ON CONSTRAINT consatrint_name_key 
 DO''' + '\n'
-            i = 0
-            length = len(cols)
-            for s in cols:
-                for ch in ['\\','/','*','-','.',',','(',')']:
-                    s = s.replace(ch,'')
-                s = s.replace(r' ','_')
-                i+=1
-                if i < length:
-                    query_str1 = query_str1 + '       ' + s + ',' + '\n'
-                    query_str2 = query_str2 + '       ' + s + ' = coalise.' + s + ',' + '\n'
-                else:
-                    query_str1 = query_str1 + '       ' + s + '\n'
-                    query_str2 = query_str2 + '       ' + s + ' = coalise.' + s  + '\n'
-                
-            query_str1 = query_str1 + '     FROM db.schemma_name.data_temp' + ''')''' + '\n'
+        i = 0
+        length = len(cols)
+        for s in cols:
+            for ch in ['\\','/','*','-','.',',','(',')','"',"'"]:
+                s = s.replace(ch,'')
+            s = s.replace(r'à','a')
+            s = s.replace(r' ','_').lower()
+            i+=1
+            if i < length:
+                query_str1 = query_str1 + '       ' + s + ',' + '\n'
+                query_str2 = query_str2 + '       ' + s + ' = coalise.' + s + ',' + '\n'
+            else:
+                query_str1 = query_str1 + '       ' + s + '\n'
+                query_str2 = query_str2 + '       ' + s + ' = coalise.' + s  + '\n'
+            
+        query_str1 = query_str1 + '     FROM db.schemma_name.data_temp' + ''')''' + '\n'
 
-            query_str = query_str + query_str1 + on_consatrint + query_str2 
+        query_str = query_str + query_str1 + on_consatrint + query_str2 
 
     return render(request, 'upsert.html', {
     'query_str': query_str
