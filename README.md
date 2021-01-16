@@ -1,5 +1,6 @@
 # Kira 
 
+## Kira is an app builded in Django Framework. It is an assisstant that helps to create Database query-table from an Excel file. In one section is showed the AVRO Schema of the Excel file.
 
 ## Running the Project Locally
 
