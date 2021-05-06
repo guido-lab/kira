@@ -102,8 +102,8 @@ def upsert(request):
 INSERT INTO db.schemma_name.data_temp(
     SELECT
 '''         
-        on_consatrint = '''ON CONFLICT ON CONSTRAINT consatrint_name_key 
-DO''' + '\n'
+        on_consatrint = '''ON  CONFLICT ON CONSTRAINT constraint_id
+            DO UPDATE SET''' + '\n'
         i = 0
         length = len(cols)
         for s in cols:
