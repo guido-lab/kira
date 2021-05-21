@@ -81,6 +81,7 @@ CREATE TABLE db.schemma_name.data_temp(
                 query_str = query_str + '    ' + s + '  VARCHAR(200)' + '\n'
         avro_str = avro_str + ''' ]
 }'''
+        avro_str = str(cols)
         query_str = query_str + ''')'''
 
     return render(request, 'avro_schema.html', {
@@ -103,7 +104,7 @@ INSERT INTO db.schemma_name.data_temp(
     SELECT
 '''         
         on_consatrint = '''ON  CONFLICT ON CONSTRAINT constraint_id
-            DO UPDATE SET''' + '\n'
+DO UPDATE SET''' + '\n'
         i = 0
         length = len(cols)
         for s in cols:
@@ -114,10 +115,10 @@ INSERT INTO db.schemma_name.data_temp(
             i+=1
             if i < length:
                 query_str1 = query_str1 + '       ' + s + ',' + '\n'
-                query_str2 = query_str2 + '       ' + s + ' = coalise.' + s + ',' + '\n'
+                query_str2 = query_str2 + '       ' + s + ' = excluded.' + s + ',' + '\n'
             else:
                 query_str1 = query_str1 + '       ' + s + '\n'
-                query_str2 = query_str2 + '       ' + s + ' = coalise.' + s  + '\n'
+                query_str2 = query_str2 + '       ' + s + ' = excluded.' + s  + '\n'
             
         query_str1 = query_str1 + '     FROM db.schemma_name.data_temp' + ''')''' + '\n'
 
