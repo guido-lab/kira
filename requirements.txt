@@ -1,13 +1,13 @@
-asgiref==3.3.4
-# Django==2.1.7
-django-crispy-forms==1.7.2
-et-xmlfile==1.1.0
-numpy==1.20.2
-openpyxl==3.0.7
-pandas==1.2.4
-Pillow==8.2.0
-python-dateutil==2.8.1
-pytz==2018.4
-six==1.16.0
-sqlparse==0.4.1
-xlrd==2.0.1
+asgiref
+# Django
+django-crispy-forms
+et-xmlfile
+numpy
+openpyxl
+pandas
+Pillow
+python-dateutil
+pytz
+six
+sqlparse
+xlrd
